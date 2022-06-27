@@ -1,6 +1,6 @@
 # diffuserspec
 
-Diffuser Spectrometer
+Diffuser Spectrometer Git Repo
 
 How to use this repository:
 
