@@ -4,7 +4,7 @@ Diffuser Spectrometer Git Repo
 
 How to use this repository:
 
-File size limit: X=0.025 GB (25 Mb).  Files larger than this MUST go in Raw Data and will be stored separate from this Repo.  (On Google drive link: https://drive.google.com/drive/folders/1rjugHUgRvf3D8vrTu7i-7qbSZCdBH4ng?usp=sharing )
+File size limit: X=0.025 GB (25 Mb).  Files larger than this MUST go in Raw Data and will be ignored .  (Collaborators can upload files to this Google drive link: https://drive.google.com/drive/folders/1rjugHUgRvf3D8vrTu7i-7qbSZCdBH4ng?usp=sharing )
 
 - .gitignore contains the large files that should be ignored during repo commit.  This file is HIDDEN by Finder and other system viewers.  But you can open via terminal. For more info: https://www.w3schools.com/git/git_ignore.asp
 
