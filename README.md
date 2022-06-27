@@ -2,9 +2,12 @@
 
 Diffuser Spectrometer Git Repo (MATLAB VERSION)
 
-How to use this repository:
+How to install this repository:
 
-- Download Raw Data folder from this link and place at diffuserspec/Raw Data: https://drive.google.com/drive/folders/1rjugHUgRvf3D8vrTu7i-7qbSZCdBH4ng?usp=sharing 
+1. Clone the repo to your local computer. 
+2. Download Raw Data folder from this link and place at diffuserspec/Raw Data: https://drive.google.com/drive/folders/1rjugHUgRvf3D8vrTu7i-7qbSZCdBH4ng?usp=sharing 
+
+How to use this repository:
 
 - File size limit: X=0.025 GB (25 Mb).  Files larger than this MUST go in Raw Data and will be ignored during git commit. The hidden file .gitignore contains the large files that should be ignored during repo commit.  This file is HIDDEN by Finder and other system viewers.  But you can open via terminal. For more info: https://www.w3schools.com/git/git_ignore.asp
 
