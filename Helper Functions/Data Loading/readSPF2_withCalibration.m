@@ -1,16 +1,23 @@
 function [spectrum,wavelength] = readSPF2_withCalibration(calibrationCurve,...
-    calibrationOrig,signalRange)
+    calibrationOrig,signalRange,filename)
 
-    [spf2File,path] = uigetfile('.spf2');
-    origPath = cd;
-    cd(path)
-
-    data = readSPF2(spf2File);
+    %if no filename is supplied, open the GUI to select the file
+    if isempty(filename)
+        disp('Select ground truth for measurement')
+        [spf2File,path] = uigetfile('.spf2');
+        filename = [path,spf2File]
+    end
     
-    wavelength = data(signalRange,1);
+    data = readSPF2(filename);
     
-    %apply calibration data to spectrometer output
+    % if signalRange isn't specified, use default
+    if isempty(signalRange)
+        signalRange = [1740:2320];
+    end
+    
+    wavelength = data(signalRange,1); %get subset of spectrometer input
+    
+    %apply correction spectrometer output and sample at calibration
+    %wavelengths?  %ASK JOE
     spectrum = interp1(calibrationCurve,data(signalRange,2),calibrationOrig);
-
-    cd(origPath)
 end

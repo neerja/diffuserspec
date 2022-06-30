@@ -1,7 +1,7 @@
 
 function [x,Alr,Ainv,Dprime,Dprime_thresh] = TruncSVD(A,b,thresh)
 
-    % A = calibrated diffuser transform matrix
+    % A = calibrated diffuser transform matrix (mxn, m>n)
     [U,D,V] = svd(A);
 
     % D = diagnol matrix containing singular values
