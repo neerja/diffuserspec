@@ -25,7 +25,6 @@ bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpec
 
 spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
 %% load gt spectrum 
-% load calibration files  WHAT ARE THESE?
 load './Datasets matFiles/120grit/wavelength_gt.mat'
 
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum_gt/partialSpectrum_1.spf2';
