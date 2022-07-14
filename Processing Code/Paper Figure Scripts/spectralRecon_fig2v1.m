@@ -163,3 +163,76 @@ ylabel('Intensity (arb unit)')
 ylim([-0.2,1.2])
 xlim([782,868])
 legend
+
+%% try on broadband spectrum 
+
+filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadBand_#0003.tif';
+bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadband_background_#0004.tif';
+
+spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
+
+% load wavelengths
+load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'
+
+% load gt spectrum 
+load './Datasets matFiles/calibrationFiles/wavelength_gt.mat'
+filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadBand3.spf2';
+
+% fix the wavelength calibration on the ground truth spectrometer, resample
+% to match calibrationWavelength_fit
+[partialSpectrum_gt,partialSpectrumWavelengths_gt] = ...
+    readSPF2_withCalibration(wavelengthOrig,wavelengthCorrected,signalRange,filename,calibrationWavelengths_fit);
+partialSpectrum_gt = partialSpectrum_gt/max(partialSpectrum_gt(:));
+
+
+sigmaman = 20;
+recon_gauss = gaussSVD(spectralPSF_2D,spectrumForRecon_sampled,sigmaman);
+recon_gauss = recon_gauss./max(recon_gauss(2:end-2)); %ignore edge channels 
+figure;
+plot(calibrationWavelengths_fit,recon_gauss,'DisplayName','Recon'); hold on;
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt,'--','DisplayName','GT')
+xlabel('Wavelength (nm)'),
+ylabel('Intensity (arb unit)')
+ylim([-0.2,1.2])
+xlim([782,868])
+legend
+
+%% try on broadband spectrum taken with broadest Pinhole
+filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadband_25nmBW/partialSpectrum_broadestPinhole_fullSpectrum.tif';
+bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadband_background_#0004.tif';
+
+spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
+
+% load wavelengths
+load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'
+
+% load gt spectrum 
+load './Datasets matFiles/calibrationFiles/wavelength_gt.mat'
+filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadband_25nmBW/partialSpectrum_4_broadestPinhole.spf2';
+
+% fix the wavelength calibration on the ground truth spectrometer, resample
+% to match calibrationWavelength_fit
+[partialSpectrum_gt,partialSpectrumWavelengths_gt] = ...
+    readSPF2_withCalibration(wavelengthOrig,wavelengthCorrected,signalRange,filename,calibrationWavelengths_fit);
+partialSpectrum_gt1 = partialSpectrum_gt/max(partialSpectrum_gt(:));
+
+filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadband_25nmBW/partialSpectrum_4_broadestPinhole2.spf2';
+% fix the wavelength calibration on the ground truth spectrometer, resample
+% to match calibrationWavelength_fit
+[partialSpectrum_gt,partialSpectrumWavelengths_gt] = ...
+    readSPF2_withCalibration(wavelengthOrig,wavelengthCorrected,signalRange,filename,calibrationWavelengths_fit);
+partialSpectrum_gt2 = partialSpectrum_gt/max(partialSpectrum_gt(:));
+
+
+sigmaman = 20;
+recon_gauss = gaussSVD(spectralPSF_2D,spectrumForRecon_sampled,sigmaman);
+recon_gauss = recon_gauss./max(recon_gauss(2:end-2)); %ignore edge channels 
+figure;
+plot(calibrationWavelengths_fit,recon_gauss,'DisplayName','Recon'); hold on;
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt1,'--','DisplayName','GT')
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt2,'--','DisplayName','GT')
+xlabel('Wavelength (nm)'),
+ylabel('Intensity (arb unit)')
+ylim([-0.2,1.2])
+xlim([782,868])
+legend
