@@ -1,6 +1,5 @@
 function [spectralPSF_2D, samp_xy,sampfac] = randSamplePSF(spectralPSF_3D,samplepercent)
 
-samplepercent = .1;
 
 [N1,N2,N3] = size(spectralPSF_3D);
 sampfac = round(sqrt(N1*N2*(samplepercent/100)));

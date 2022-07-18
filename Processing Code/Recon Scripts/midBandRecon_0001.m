@@ -24,39 +24,18 @@ filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectr
 bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/background_partialSpectrum_#0001.tif';
 
 spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
-%% load gt spectrum (BUGGY) %ASK JOE FOR BETTER WAY
-% load groundtruth spectrum
-
-% load calibration files  WHAT ARE THESE?
-load './Datasets matFiles/120grit/calibrationCurve.mat'
-load './Datasets matFiles/120grit/calibrationOrig.mat'
-load './Datasets matFiles/120grit/signalRange.mat'
+%% load gt spectrum 
+load './Datasets matFiles/120grit/wavelength_gt.mat'
 
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum_gt/partialSpectrum_1.spf2';
-% CHECK THIS FUNCTION - ELSE DELETE
+
 [partialSpectrum_gt,partialSpectrumWavelengths_gt] = ...
-    readSPF2_withCalibration(calibrationCurve,calibrationOrig,signalRange,filename);
+    readSPF2_withCalibration(wavelengthOrig,wavelengthCorrected,signalRange,filename,calibrationWavelengths_fit);
 partialSpectrum_gt = partialSpectrum_gt/max(partialSpectrum_gt(:));
 
-% WHY RESIZE?
-partialSpectrum_gt = imresize(partialSpectrum_gt,...
-    [344 size(partialSpectrum_gt,2)]);
-partialSpectrumWavelengths_gt = imresize(partialSpectrumWavelengths_gt,...
-    [344 size(partialSpectrumWavelengths_gt,2)]);
-
+figure;
+hold on
 plot(partialSpectrumWavelengths_gt,partialSpectrum_gt)
-xlabel('Wavelength (nm)')
-ylabel('normallized intensity')
-legend('groundtruth')
-
-%% load gt spectrum (My way)
-filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum_gt/partialSpectrum_1.spf2';
-[~,spectrum_gt] = readSPF2withInterp1(calibrationWavelengths_fit,filename);
-
-% normalize
-spectrum_gt = spectrum_gt/max(spectrum_gt);
-
-plot(calibrationWavelengths_fit,spectrum_gt)
 xlabel('Wavelength (nm)')
 ylabel('normallized intensity')
 legend('groundtruth')
@@ -66,10 +45,10 @@ thresh = 0.01; %2 is optimal
 [recon,Alr,Ainv,Dprime,Dprime_thresh] = TruncSVD(spectralPSF_2D,...
     spectrumForRecon_sampled,thresh);
 recon = abs(recon/max(recon(:)));
-
+figure;
 plot(calibrationWavelengths_fit,recon)
 hold on
-plot(calibrationWavelengths_fit,spectrum_gt,'--')
+plot(calibrationWavelengths_fit,partialSpectrum_gt,'--')
 
 xlabel('Wavelength (nm)')
 ylabel('Intensity (arb unit)')
@@ -83,7 +62,8 @@ recon_gauss = gaussSVD(spectralPSF_2D,spectrumForRecon_sampled,sigma);
 fig = figure(1);
 plot(calibrationWavelengths_fit,recon_gauss)
 hold on
-plot(calibrationWavelengths_fit,spectrum_gt,'--')
+% plot(calibrationWavelengths_fit,spectrum_gt,'--')
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt)
 
 xlabel('Wavelength (nm)')
 ylabel('Intensity (arb unit)')
@@ -92,7 +72,26 @@ xlim([782,868])
 legend('Reconstructed','Groundtruth')
 
 % save figure in results
+% 
+% resultfile = './Results/120grit_midband0001_gaussSVD_30';
+% saveas(fig, resultfile,'png')
+% saveas(fig, resultfile,'eps')
 
-resultfile = './Results/120grit_midband0001_gaussSVD_30';
-saveas(fig, resultfile,'png')
-saveas(fig, resultfile,'eps')
+%% Try ridge regression
+lambda = 10000;
+% matlab statistical and machine learning toolbox has builtin ridge
+% regression
+recon_ridge = ridge(spectrumForRecon_sampled, spectralPSF_2D,lambda);
+recon_ridge = recon_ridge/max(recon_ridge);
+fig = figure(1);
+plot(calibrationWavelengths_fit,recon_ridge)
+hold on
+% plot(calibrationWavelengths_fit,spectrum_gt,'--')
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt)
+
+xlabel('Wavelength (nm)')
+ylabel('Intensity (arb unit)')
+ylim([-0.2,1.2])
+xlim([782,868])
+legend('Reconstructed','Groundtruth')
+
