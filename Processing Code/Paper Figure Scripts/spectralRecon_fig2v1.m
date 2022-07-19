@@ -14,7 +14,18 @@ load('./Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrationInfo.mat
 %% TODO:
 % make a function that creates a sampling mask. takes in three parameters:
 % example imagesize, min square,max square, number of sampling points. 
-% use randSamplePSF then ignore any values inside min square. 
+% use randSamplePSF then ignore any values inside min square.
+
+[N1,N2,N3] = size(spectralPSF_3D);
+sampfac = round(sqrt(N1*N2*(samplepercent/100)));
+
+samp_xy = zeros(sampfac,2);
+samp_xy(:,1) = ceil(N1*rand(sampfac,1));
+samp_xy(:,2) = ceil(N2*rand(sampfac,1));
+
+samp_full = spectralPSF_3D(samp_xy(:,1),samp_xy(:,2),:);
+spectralPSF_2D = reshape(samp_full,[sampfac^2,N3]);
+
 
 %% Create randomly sampled 2D spectralPSF
 % choose percentage of data to sample
@@ -28,7 +39,7 @@ bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpec
 spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
 
 % load wavelengths
-load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'
+% load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'
 
 %% load gt spectrum 
 load './Datasets matFiles/calibrationFiles/wavelength_gt.mat'

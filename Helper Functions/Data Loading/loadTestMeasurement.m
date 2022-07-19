@@ -10,7 +10,7 @@ bgSpectrumForRecon = tifRead(bgfilename);
 spectrumForRecon = mean(spectrumForRecon,3);
 bgSpectrumForRecon = mean(bgSpectrumForRecon,3);
 spectrumForRecon = abs(spectrumForRecon - bgSpectrumForRecon);
-if isempty(samp_xy)
+if nargin<3
     % if no sampling, then return entire frame
     spectrumForRecon_sampled = spectrumForRecon;
 else
