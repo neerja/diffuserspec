@@ -11,32 +11,18 @@ infofilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrati
 load('./Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrationInfo.mat')
 % contains calibrationWavelengths_fit, description
 
-%% TODO:
-% make a function that creates a sampling mask. takes in three parameters:
-% example imagesize, min square,max square, number of sampling points. 
-% use randSamplePSF then ignore any values inside min square.
-
-[N1,N2,N3] = size(spectralPSF_3D);
-sampfac = round(sqrt(N1*N2*(samplepercent/100)));
-
-samp_xy = zeros(sampfac,2);
-samp_xy(:,1) = ceil(N1*rand(sampfac,1));
-samp_xy(:,2) = ceil(N2*rand(sampfac,1));
-
-samp_full = spectralPSF_3D(samp_xy(:,1),samp_xy(:,2),:);
-spectralPSF_2D = reshape(samp_full,[sampfac^2,N3]);
-
-
 %% Create randomly sampled 2D spectralPSF
 % choose percentage of data to sample
 samplepercent = 0.1; %percent of pixels
-[spectralPSF_2D,sampxy,sampfac] = randSamplePSF(spectralPSF_3D,samplepercent);
+maskbox = 500; %radius to ignore in center
+[spectralPSFrand, samp_ind_nonan] = randSamplePSF_mask(spectralPSF_3D,samplepercent,maskbox);
 
 %% load midband spectrum
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/partialSpectrum_#0002.tif';
 bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/background_partialSpectrum_#0001.tif';
 
-spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
 
 % load wavelengths
 % load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'
@@ -91,7 +77,9 @@ sigmaopt = sigma_range(sigind);
 
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/partialSpectrum_#0002.tif';
 bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/background_partialSpectrum_#0001.tif';
-spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
+
 % load gt spectrum 
 load './Datasets matFiles/calibrationFiles/wavelength_gt.mat'
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum_gt/partialSpectrum_2.spf2';
@@ -120,7 +108,8 @@ ylabel('Cost')
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/partialSpectrum_#0001.tif';
 bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/background_partialSpectrum_#0001.tif';
 
-spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
 
 % load wavelengths
 load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'
@@ -150,7 +139,8 @@ legend
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/partialSpectrum_#0003.tif';
 bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/partialSpectrum/background_partialSpectrum_#0001.tif';
 
-spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
 
 % load wavelengths
 load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'
@@ -180,7 +170,8 @@ legend
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadBand_#0003.tif';
 bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadband_background_#0004.tif';
 
-spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
 
 % load wavelengths
 load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'
@@ -212,7 +203,8 @@ legend
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadband_25nmBW/partialSpectrum_broadestPinhole_fullSpectrum.tif';
 bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadband_background_#0004.tif';
 
-spectrumForRecon_sampled = loadTestMeasurement(filename,bgfilename,sampxy,sampfac);
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
 
 % load wavelengths
 load 'Datasets matFiles/calibrationFiles/calibrationWavelengths_fit.mat'

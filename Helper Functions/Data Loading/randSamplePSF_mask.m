@@ -1,18 +1,37 @@
-function [spectralPSF_2D, samp_xy,sampfac] = randSamplePSF_mask(spectralPSF_3D,samplepercent,maskSize)
+function [spectralPSFrand, samp_ind_nonan] = randSamplePSF_mask(spectralPSF_3D,samplepercent,maskbox)
 
-%This function doesn't do the right things
+% samples an image randomly.  sets values inside center box of size
+% maskbox (half width) to NaN and omits those elements in output.
 
-[N1,N2,N3] = size(spectralPSF_3D);
-sampfac = round(sqrt(N1*N2*(samplepercent/100)));
-
-N1_mask = N1-maskSize;
-N2_mask = N2-maskSize;
-
-samp_xy = zeros(sampfac,2);
-samp_xy(:,1) = ceil(N1_mask*rand(sampfac,1))+maskSize;
-samp_xy(:,2) = ceil(N2_mask*rand(sampfac,1))+maskSize;
-
-samp_full = spectralPSF_3D(samp_xy(:,1),samp_xy(:,2),:);
-spectralPSF_2D = reshape(samp_full,[sampfac^2,N3]);
+% 1. get random samples over linear indexing. 
+    if nargin<3
+        maskbox = 500; %half width of the box. 
+    end
+    
+    if nargin<2
+        samplepercent = 0.1;
+    end
+    
+    [N1,N2,N3] = size(spectralPSF_3D);
+    numsamples = floor(N1*N2*(samplepercent/100));
+    samp_ind = randi(N1*N2,[numsamples,1]);
+    
+    % 2. get indices for mask
+    rows = [floor(N1/2)-maskbox:floor(N1/2)+maskbox];
+    cols = [floor(N2/2)-maskbox:floor(N2/2)+maskbox];
+    
+    % 3. set value to NaN inside A for mask
+    spectralPSF_3D(rows,cols,:) = nan;
+    s = spectralPSF_3D(:,:,1);  % get ready to use linear sampling.
+    % check to see which ones are nan
+    samp_ind_nonan = samp_ind(~isnan(s(samp_ind)));
+    % use samp_ind_nonan for sampling from now on:
+    spectralPSFrand = zeros(length(samp_ind_nonan),N3);
+    
+    % 4. use the indices without nan on all wavelength channels
+    for m = 2:N3
+        s = spectralPSF_3D(:,:,m);
+        spectralPSFrand(:,m) = s(samp_ind_nonan); %use linear indexing for truly random
+    end
 
 end
