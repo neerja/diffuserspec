@@ -3,7 +3,7 @@
 % July 13th, 2022
 % Purpose: generate the recon for measurements.  
 
-%% load calibration dataset (takes a minute)
+%% load calibration dataset for 120grit (takes a minute)
 filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/spectralPSF_3D_norm.tif'
 spectralPSF_3D = tifRead(filename);
 
@@ -11,67 +11,166 @@ infofilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrati
 load('./Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrationInfo.mat')
 % contains calibrationWavelengths_fit, description
 
-%% TODO: % make a function that creates a sampling mask. takes in three parameters:
-% example imagesize, min square,max square, number of sampling points. 
-% use randSamplePSF then ignore any values inside min square.
+samplepercent = 0.1;
+maskbox = 500;
 
-maskbox = 500; %half width of the box. 
+% randomly sample the PSF with a masked box in center 
+[spectralPSFrand, samp_ind_nonan] = randSamplePSF_mask(spectralPSF_3D,samplepercent,maskbox);
+
+%% load midband spectrum
+filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadband_#0001.tif';
+bgfilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadband_background_#0004.tif';
+
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
+
+% load gt spectrum 
+load './Datasets matFiles/calibrationFiles/wavelength_gt.mat'
+filename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/broadBand_Full/broadBand1.spf2';
+
+% fix the wavelength calibration on the ground truth spectrometer, resample
+% to match calibrationWavelength_fit
+[partialSpectrum_gt,partialSpectrumWavelengths_gt] = ...
+    readSPF2_withCalibration(wavelengthOrig,wavelengthCorrected,signalRange,filename,calibrationWavelengths_fit);
+partialSpectrum_gt = partialSpectrum_gt/max(partialSpectrum_gt(:));
+
+figure;
+hold on
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt)
+xlabel('Wavelength (nm)')
+ylabel('normallized intensity')
+legend('groundtruth')
+
+% recon the spectrum
+sigma = 20;
+recon_gauss = gaussSVD(spectralPSFrand,spectrumForRecon_sampled,sigma);
+figure;
+plot(calibrationWavelengths_fit,recon_gauss,'DisplayName','Recon'); hold on;
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt,'--','DisplayName','GT')
+xlabel('Wavelength (nm)'),
+ylabel('Intensity (arb unit)')
+ylim([-0.2,1.2])
+xlim([782,868])
+legend
+
+%% try on TAPE
+% load calibration dataset for tape (takes a minute)
+filename = './Raw Data/Tape/tape_spectralTM_3D-001.tif'
+bgfilename = './Raw Data/Tape/tape_spectralTM_background.tif'
+
+spectralPSF_3D = import_spectralPSF_3D(filename,bgfilename);
+
+infofilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrationInfo.mat'
+load('./Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrationInfo.mat')
+% contains calibrationWavelengths_fit, description
 
 samplepercent = 0.1;
+maskbox = 500;
 
-[N1,N2,N3] = size(spectralPSF_3D);
-sampfac = round(sqrt(N1*N2*(samplepercent/100)));
+% randomly sample the PSF with a masked box in center 
+[spectralPSFrand, samp_ind_nonan] = randSamplePSF_mask(spectralPSF_3D,samplepercent,maskbox);
 
-samp_xy(:,1) = randi(N1,[sampfac,1]);
-samp_xy(:,2) = randi(N2,[sampfac,1]);
+%% load and recon broadband spectrum
+filename = './Raw Data/Tape/broadband/broadband_full_#0001.tif';
+bgfilename = './Raw Data/Tape/broadband/broadband_full_background_#0006.tif';
 
-% compute portion inside the box
-logic(:,1) = samp_xy(:,1)>(floor(N1/2)-maskbox);
-logic(:,2) = samp_xy(:,1)<(floor(N1/2)+maskbox);
-logic(:,3) = samp_xy(:,2)>(floor(N2/2)-maskbox);
-logic(:,4) = samp_xy(:,2)<(floor(N2/2)+maskbox);
-% remove the indices that are inside the box
-insidebox = all(logic,2);
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
 
-%% use linear indexing instead
+% load gt spectrum 
+load './Datasets matFiles/calibrationFiles/wavelength_gt.mat'
+filename = './Raw Data/Tape/broadband_gt/broadband_source2_gt.spf2';
 
-% 1. get random samples over linear indexing. 
-maskbox = 500; %half width of the box. 
+% fix the wavelength calibration on the ground truth spectrometer, resample
+% to match calibrationWavelength_fit
+[partialSpectrum_gt,partialSpectrumWavelengths_gt] = ...
+    readSPF2_withCalibration(wavelengthOrig,wavelengthCorrected,signalRange,filename,calibrationWavelengths_fit);
+partialSpectrum_gt = partialSpectrum_gt/max(partialSpectrum_gt(:));
+
+figure;
+hold on
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt)
+xlabel('Wavelength (nm)')
+ylabel('normallized intensity')
+legend('groundtruth')
+
+% recon the spectrum
+sigma = 10;
+recon_gauss = gaussSVD(spectralPSFrand,spectrumForRecon_sampled,sigma);
+figure;
+plot(calibrationWavelengths_fit,recon_gauss,'DisplayName','Recon'); hold on;
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt,'--','DisplayName','GT')
+xlabel('Wavelength (nm)'),
+ylabel('Intensity (arb unit)')
+ylim([-0.2,1.2])
+xlim([782,868])
+legend
+
+%% try with DOE
+
+% load calibration dataset for tape (takes a minute)
+filename = './Raw Data/DOE/DOE_spectralTM_3D-002.tif'
+bgfilename = './Raw Data/DOE/DOE_spectralTM_background.tif'
+
+spectralPSF_3D = import_spectralPSF_3D(filename,bgfilename);
+
+infofilename = './Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrationInfo.mat'
+load('./Raw Data/120grit_partialBroadbandSpectrum_2022-06-16/calibrationInfo.mat')
+% contains calibrationWavelengths_fit, description
+
 samplepercent = 0.1;
-[N1,N2,N3] = size(spectralPSF_3D);
-numsamples = floor(N1*N2*(samplepercent/100));
-samp_ind = randi(N1*N2,[numsamples,1]);
+maskbox = 500;
 
-% 2. get indices for mask
-rows = [floor(N1/2)-maskbox:floor(N1/2)+maskbox];
-cols = [floor(N2/2)-maskbox:floor(N2/2)+maskbox];
-maskind = sub2ind([N1 N2],rows,cols)';
+% randomly sample the PSF with a masked box in center 
+[spectralPSFrand, samp_ind_nonan] = randSamplePSF_mask(spectralPSF_3D,samplepercent,maskbox);
 
-%% set value to NaN inside A for mask
-spectralPSF_3D(rows,cols,:) = nan;
+%% load and recon broadband spectrum
+filename = './Raw Data/DOE/broadBand/broadband_source1_#0003.tif';
+bgfilename = './Raw Data/DOE/broadBand/broadband_background_source1_#0006.tif';
 
-s = spectralPSF_3D(:,:,1);
+spectrumForRecon = loadTestMeasurement(filename,bgfilename);
+spectrumForRecon_sampled = spectrumForRecon(samp_ind_nonan);
 
-for m = 1:N3
-    %reshape 
-    s = spectralPSF_3D(:,:,m);
-    samp_full(:,m) = s(samp_ind); %use linear indexing for truly random
+% load gt spectrum 
+load './Datasets matFiles/calibrationFiles/wavelength_gt.mat'
+filename = './Raw Data/DOE/broadband_gt/broadband_source1_gt.spf2';
 
-nanind = isnan(samp_full);
-% remove those values here and in samp_ind
-spectralPSF_2D = samp_full(~nanind);
+% fix the wavelength calibration on the ground truth spectrometer, resample
+% to match calibrationWavelength_fit
+[partialSpectrum_gt,partialSpectrumWavelengths_gt] = ...
+    readSPF2_withCalibration(wavelengthOrig,wavelengthCorrected,signalRange,filename,calibrationWavelengths_fit);
+partialSpectrum_gt = partialSpectrum_gt/max(partialSpectrum_gt(:));
 
-% 4. get samples of A. 
+figure;
+hold on
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt)
+xlabel('Wavelength (nm)')
+ylabel('normallized intensity')
+legend('groundtruth')
 
+%% recon the spectrum
+sigma = 20;
+recon_gauss = gaussSVD(spectralPSFrand,spectrumForRecon_sampled,sigma);
+figure;
+plot(calibrationWavelengths_fit,recon_gauss,'DisplayName','Recon'); hold on;
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt,'--','DisplayName','GT')
+xlabel('Wavelength (nm)'),
+ylabel('Intensity (arb unit)')
+ylim([-0.2,1.2])
+xlim([782,868])
+legend
 
+%% try find a single measurement.
 
-%%
-samp_full = spectralPSF_3D(samp_xy(:,1),samp_xy(:,2),:);
-spectralPSF_2D = reshape(samp_full,[sampfac^2,N3]);
+sigma = 40;
+recon_gauss = gaussSVD(spectralPSFrand,spectralPSFrand(:,200),sigma);
+figure;
+plot(calibrationWavelengths_fit,recon_gauss,'DisplayName','Recon'); hold on;
+plot(partialSpectrumWavelengths_gt,partialSpectrum_gt,'--','DisplayName','GT')
+xlabel('Wavelength (nm)'),
+ylabel('Intensity (arb unit)')
+ylim([-0.2,1.2])
+xlim([782,868])
+legend
 
-
-
-% Option 2: randomly sampling.  Then throw away the values in the mask
-% range. compute the portion thrown away.  resample and repeat until the
-% samp_xy list is long enough? 
 
