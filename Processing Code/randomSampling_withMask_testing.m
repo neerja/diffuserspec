@@ -48,7 +48,7 @@ clear backgroundFrame normalizedIntensity
 
 samplePercent = .1;
 maskSize = 500;
-[spectralPSF_2D, samp_xy,sampfac] = randSamplePSF_mask(spectralPSF_3D,samplePercent,maskSize);
+% [spectralPSF_2D, samp_xy,sampfac] = randSamplePSF_mask(spectralPSF_3D,samplePercent,maskSize);
 
 
 spectralPSF_2D_downsamp = spectralPSF_2D(:,1:2:end);
@@ -103,10 +103,31 @@ spectralPSF_2D_downsamp = spectralPSF_2D(:,1:2:end);
         res15nm,thresh);
     recon_2pt_tSVD = abs(recon_2pt_tSVD/max(recon_2pt_tSVD(:)));
 
-    sig = 200;
+    sig = 115;
     [recon_2pt_gSVD] = gaussSVD(spectralPSF_2D_downsamp,...
         res15nm,sig);
     recon_2pt_gSVD = abs(recon_2pt_gSVD/max(recon_2pt_gSVD(:)));
 
 figure;plot(calibrationWavelengths_fit(:,1:2:end)',recon_2pt_tSVD(1:172));hold on
             plot(calibrationWavelengths_fit(:,1:2:end)',recon_2pt_gSVD(1:172));hold off
+
+            %%
+
+vertLines = zeros(size(spectralPSF_2D,2),6);
+for vert = 1:6
+    vertLines(multiPeakVec(vert)) = 1;
+end
+
+figure;
+subplot(1,3,[1 2])
+plot(calibrationWavelengths_fit(:,1:2:end)',recon_gSVD(1:172,:));hold on
+stem(calibrationWavelengths_fit(:,multiPeakVec)',vertLines(vertLines == 1),'k--');hold off
+axis([-inf inf 0 1])
+xlabel('Wavelegnth (nm)')  
+ylabel('Norm. Intensity')
+
+subplot(1,3,3)
+plot(calibrationWavelengths_fit(:,156:2:196)',recon_2pt_gSVD(78:98));hold on
+stem(calibrationWavelengths_fit(:,[172 178])',[1 1],'k--');hold off
+xlabel('Wavelegnth (nm)')  
+ylabel('Norm. Intensity')
