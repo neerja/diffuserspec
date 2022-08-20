@@ -79,13 +79,13 @@ broadband_reshape = squeeze(reshape(broadband,[],1));
 broadband_forRecon = broadband_reshape(samp_ind_nonan,:);
 
 %%
-sig = 14;
+sig =12;
 [recon_broadband_gSVD] = gaussSVD(spectralPSF_2D(:,1:344),...
     broadband_forRecon,sig);
 recon_broadband_gSVD = abs(recon_broadband_gSVD/max(recon_broadband_gSVD(:)));
 
 figure; plot(calibrationWavelengths_fit,recon_broadband_gSVD);hold on
-plot(DOE_wavelengths(32:545),DOE_broadband_source1(32:545)/max(DOE_broadband_source1(32:545)));
+plot(full_gt_waves(32:546),full_gt(32:546)/max(full_gt(32:546)));
 xlabel('Wavelength (nm)')
 ylabel('Norm. Intensity')
 legend('Recon','Ground Truth')
