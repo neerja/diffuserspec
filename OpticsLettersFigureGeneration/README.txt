@@ -1,16 +1,28 @@
-README: Spectral Resolution Figure 4 generation code/data
+README - DiffuserSpec figure generation code
 
-All code is located on the git in the following locations
-	.../GitHub\git_code_smartoct\diffuserSpec\OpticsLettersFigureGeneration
+Main folder: Projects\smartOCT\Publication\Articles\smartOCT_diffuseSpec\manuscript_Code_Data
+	- contains all code and data for processing diffuserSpec data and generating figures 
+	for diffuserSpec manuscript
+
+TO RUN CODE: 1) open one of the FigureX_Main functions within [...\manuscript_Code_Data\Code] directory
+	2) run code
+	3) code will prompt you to select a working directory. Select the server location labeled 
+		in the comments of the code (same as directory labeled in this readme under main folder. 
+	4) code will run to completion 
+
+Sub-folders:
+
+	Code: contains 3 Main files for generating figure 2, 3 and 4 (labeled as FigureX_Main)
 	
-	Figure4_Main: main file containing bulk code
-	subFunctions: folder containing subfunctions used in Main code (also added to bottom of Main script)
+		subFunctions - contains subfunctions required for running the Main functions
 
-All data is located on the server in the following location
-	...\Projects:\smartOCT\Analysis\Data\CDMRPVRP\diffuserSpecData_OpticsLetters\organizedCodeData\Data
+	Data: main data files needed for Main files in Code folder
 
-	tape_SSTM_3D: full calibration SSTM data
-	tape_SSTM_3D_background: background frame for subtraction
-	calibrationFiles: folder containing data for spectrometer wavelength calibration
-	Figure4_data: saved data that is used for manuscript figure (not used for the Main function above)
+		SSTM_3D.tif - full 3D SSTM acquired through diffuserSpec calibration procedure (details in text)
+		SSTM_background.tif - SSTM background for subtraction from SSTM_3D.tif
+
+		broadbandData - data for broadband reconstructions
+		calibrationFiles - precalibrated spectrometer data
+		SSTM_gt - raw SSTM ground truth data (not used in Main files, just here if needed)
+
 	
