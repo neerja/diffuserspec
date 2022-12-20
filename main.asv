@@ -56,61 +56,25 @@ disp('Normalizing Data - will take some time')
 load('./Data/broadbandMeasurements/Inphenix_groundTruth_wavelengths.mat');
 load('./Data/broadbandMeasurements/Inphenix_groundTruth_spectrum.mat');
 
-% assign filenames for measurement data
+% 
 measurement_fileName = './Data/broadbandMeasurements/Inphenix_1.tif';
 measurementBackground_fileName = './Data/broadbandMeasurements/broadband_openPinhole_background.tif';
 
-% load diffuse broadband image of Inphenix source
+%load diffuse broadband image of Inphenix source
 broadbandMeasurement = tifRead(measurement_fileName);
 
-% load background frame
+%load background frame
 broadbandMeasurement_background = tifRead(measurementBackground_fileName);
 
-% perform background subtraction
+%perform background subtraction
 broadbandMeasurement = abs(broadbandMeasurement - broadbandMeasurement_background);
 
 %% 3. pre-process as needed
-
-    % Percentage of total SSTM to sample for the reconstruction, this value
-    % is hard coded for 40000 pix.
-    samplePercent = 5.35;
-
-    % The radius values are used to determine which region of the SSTM to
-    % sample over.
-    innerRad = 1280;
-    outerRad = 0;
-
-    % makeCircularMask function uses the specified radii parameters to
-    % create a binary mask used for SSTM sampling 
-    [mask_corners,maskCoordinates_corners] = ...
-        makeCircularMask(SSTM,innerRad,outerRad);
-
-    % applyMask_random function samples the SSTM according to the mask
-    % generated above
-    [SSTM_corners,samp_corners] = applyMask_random...
-        (SSTM,maskCoordinates_corners,samplePercent);
-
-    % initialize variable for sampled broadbandIm matrix
-    b_broadbandIm = zeros(size(SSTM_corners,1),1);
-
-    % Sample broadband diffuse image using coordinates from above
-    for coordinate = 1:size(SSTM_corners,1)
-        b_broadbandIm(coordinate,:) = broadbandIm(maskCoordinates_corners...
-            (samp_corners(coordinate,1),2),maskCoordinates_corners...
-            (samp_corners(coordinate,1),1),:);
-    end
 
 
 
 %% 4. run recon
 
-    % assign sigma filter value and perform reconstruction
-    sig =34;
-    [recon_broadband] = gaussSVD(SSTM_corners(:,1:344),...
-        b_broadbandIm,sig);
-
-    % normalize to max value
-    recon_broadband = recon_broadband/max(recon_broadband(10:330));
 
 
 %% 5. analyze the spectral correlation for this diffuser matrix
