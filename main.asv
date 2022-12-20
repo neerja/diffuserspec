@@ -1,0 +1,80 @@
+% main.m
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  
+%
+%  Purpose: 
+%
+%  Other m-files required: 
+
+%  Subfunctions: 
+
+%  MAT-files required: 
+
+%--------------------------------------------------------------------------
+%
+%  Author:          Joe Malone (joseph.d.malone@vanderbilt.edu, Neerja
+%                   Aggarwal (neerja@berkeley.edu)
+%  Organization:    Bowden Biomedical Optics Lab, Vanderbilt University
+%  Creation Date:   2022/20/12
+%  Last Modified:   2022/20/12
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%
+% MAIN %
+%%%%%%%%
+
+%------------- BEGIN CODE --------------% 
+
+%% 1. load calibration files
+
+% The calibration data is located in the Data folder.  
+
+% load system calibration files
+load('./Data/calibrationFiles/calibrationWavelengths_fit.mat');
+
+% assign file locations
+SSTM_fileName = './Data/SSTM_3D.tif';
+SSTM_background_fileName = './Data/SSTM_background.tif';
+
+%load SSTM calibration matrix
+disp('Loading SSTM...')
+    SSTM = tifRead(SSTM_fileName);
+
+%load background frame
+disp('Loading SSTM background frame...')
+    SSTM_backgroundFrame = tifRead(SSTM_background_fileName);
+    
+% Normalize intensity of the SSTM calibration
+disp('Normalizing Data - will take some time')
+    [SSTM] = load_normalize_SSTM(SSTM,SSTM_backgroundFrame);
+
+%% 2. load measurement
+
+% ground truth spectrum collected on Thorlabs spectrometer 
+load('./Data/broadbandMeasurements/Inphenix_groundTruth_wavelengths.mat');
+load('./Data/broadbandMeasurements/Inphenix_groundTruth_spectrum.mat');
+
+% 
+measurement_fileName = './Data/broadbandMeasurements/Inphenix_1.tif';
+measurementBackground_fileName = './Data/broadbandMeasurements/broadband_openPinhole_background.tif';
+
+%load diffuse broadband image of Inphenix source
+broadbandMeasurement = tifRead(measurement_fileName);
+
+%load background frame
+broadbandMeasurement_background = tifRead(measurementBackground_fileName);
+
+%perform background subtraction
+broadbandMeasurement = abs(broadbandMeasurement - broadbandMeasurement_background);
+
+%% 3. pre-process as needed
+
+
+
+%% 4. run recon
+
+
+
+%% 5. analyze the spectral correlation for this diffuser matrix
