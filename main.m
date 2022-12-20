@@ -82,21 +82,21 @@ broadbandMeasurement = abs(broadbandMeasurement - broadbandMeasurement_backgroun
 
     % makeCircularMask function uses the specified radii parameters to
     % create a binary mask used for SSTM sampling 
-    [mask_corners,maskCoordinates_corners] = ...
+    [mask_corners,maskCoordinates_outerRad] = ...
         makeCircularMask(SSTM,innerRad,outerRad);
 
     % applyMask_random function samples the SSTM according to the mask
     % generated above
-    [SSTM_corners,samp_corners] = applyMask_random...
-        (SSTM,maskCoordinates_corners,samplePercent);
+    [SSTM_outerRad,samp_corners] = applyMask_random...
+        (SSTM,maskCoordinates_outerRad,samplePercent);
 
     % initialize variable for sampled broadbandIm matrix
-    b_broadbandIm = zeros(size(SSTM_corners,1),1);
+    b_broadbandIm = zeros(size(SSTM_outerRad,1),1);
 
     % Sample broadband diffuse image using coordinates from above
-    for coordinate = 1:size(SSTM_corners,1)
-        b_broadbandIm(coordinate,:) = broadbandIm(maskCoordinates_corners...
-            (samp_corners(coordinate,1),2),maskCoordinates_corners...
+    for coordinate = 1:size(SSTM_outerRad,1)
+        b_broadbandIm(coordinate,:) = broadbandIm(maskCoordinates_outerRad...
+            (samp_corners(coordinate,1),2),maskCoordinates_outerRad...
             (samp_corners(coordinate,1),1),:);
     end
 
@@ -106,7 +106,7 @@ broadbandMeasurement = abs(broadbandMeasurement - broadbandMeasurement_backgroun
 
     % assign sigma filter value and perform reconstruction
     sig =34;
-    [recon_broadband] = gaussSVD(SSTM_corners(:,1:344),...
+    [recon_broadband] = gaussSVD(SSTM_outerRad(:,1:344),...
         b_broadbandIm,sig);
 
     % normalize to max value
