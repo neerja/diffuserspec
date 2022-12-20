@@ -1,5 +1,9 @@
 function [mask,maskCoordinates] = makeCircularMask(data,innerRad,outerRad)
+% This function's purpose is to create a matrix of mask coordinates 
 
+% Inputs:
+%       data = this is the SSTM (3D matrix)  
+%       innerRad = scalar
 % Set innerRad = 0 for full circular mask
 
 [xSize,ySize,~] = size(data);
