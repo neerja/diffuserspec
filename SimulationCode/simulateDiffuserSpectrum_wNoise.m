@@ -1,14 +1,14 @@
 %NEED Fuzzy Logic Toolbox
 
-close all
+% close all
 
 %wave charicteristics
 amplitude = 1;
 nPixels = 1024;
 lambda = 1.260E-6:.080E-6/(nPixels-1):1.340E-6; %(nm)
 k = 2*pi./lambda; 
-n = [1 2];
-z = [0 100e-6];
+n = [1 1.5 2 1];
+z = [0 100e-6 200e-6 300e-6];
 
 %Simulate Gaussian Source
 [wavelength, intensityWavlength] = simulateGaussianSource(830E-9, 80E-9, nPixels);

@@ -25,6 +25,7 @@ function [interferogram] = simulateOCTinterferogram(wavelength, intensityWavleng
 
         reflector_signal = reflector_signal + numberReflectors(layer)...
                     * (depth(layer+1) - depth(layer));
+
         H = H + reflector_n*exp(1i*2.*wavnumberLinear*reflector_signal);
 
     end
@@ -32,10 +33,13 @@ function [interferogram] = simulateOCTinterferogram(wavelength, intensityWavleng
     % Calculate the cross-crorelation term
     interferogram = zeros(1,numel(wavelength));
     
+    
+% min normalized interferogram 
+realH = real(H) - min(real(H));
     for layer=1:length(wavnumberLinear)
 
-        interferogram(layer) = real(intensityWavenumber(layer)...
-                    *H(layer));
+        interferogram(layer) = intensityWavenumber(layer)...
+                    *realH(layer);
 
     end
 
