@@ -1,12 +1,15 @@
-function [SSTM_2D,samp_ind] = applyMask_random(SSTM,maskCoordinates,samplepercent)
-% This function's purpose is to randomly sample the spatio-spectral
-% transfer matrix based on input percentage. 
-
+% Purpose: randomly sample the spatio-spectral transfer matrix based on input percentage. 
 
 % Inputs: 
-%       SSTM = 2D NxM (spatialPixels x wavelength) matrix
-%       maskCoordinates = coordinates of "on pixels" after mask is applied to SSTM.
+%       SSTM = processed 3D array containing calibration matrix with axes: x,y,lambda
+%       maskCoordinates = y,x coordinates of "on pixels" after mask is applied to SSTM.
 %       samplepercent = scalar between 0 and 100.
+
+% Ouputs:
+% SSTM_2D = subsampled 2D calibration matrix (pixels vs wavelength)
+% samp_ind = vector containing sampling indices into maskCoordinates
+
+function [SSTM_2D,samp_ind] = applyMask_random(SSTM,maskCoordinates,samplepercent)
 
     %initialize size of coordinate mask
     numCoords = size(maskCoordinates,1);

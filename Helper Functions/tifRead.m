@@ -1,11 +1,15 @@
-function [stack] = tifRead(filename,maxFrame,x,y)
-%
-%
+% Purpose: read tif file containing calibration matrix data.
+% Inputs: 
 % filename = name of .tiff or multitiff you want to read
-% x = [start,end] - pixel height boundry; i.e. [400,800] will crop and read in only 
+% x = [start,end] - pixel height boundary; i.e. [400,800] will crop and read in only 
 %       pixel range 400:800
-% y = [start,end] - pixel width boundry
-%
+% y = [start,end] - pixel width boundary; i.e. [400,800] will crop and read in only 
+%       pixel range 400:800
+% maxFrame = lambda index to stop at. (used if there are extra frames to omit)
+% Outputs:
+% stack = 3D array containing calibration matrix with axes: y,x,lambda
+
+function [stack] = tifRead(filename,maxFrame,x,y)
 
 info = imfinfo(filename);
 nframes = size(info,1);

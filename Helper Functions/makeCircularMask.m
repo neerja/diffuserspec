@@ -1,10 +1,13 @@
-function [mask,maskCoordinates] = makeCircularMask(data,innerRad,outerRad)
-% This function's purpose is to create a matrix of mask coordinates 
-
+% Purpose: create a matrix of mask coordinates 
 % Inputs:
-%       data = this is the SSTM (3D matrix)  
-%       innerRad = scalar
-% Set innerRad = 0 for full circular mask
+% data = this is the SSTM (3D matrix)  
+% innerRad = scalar, set innerRad = 0 for infilled circular mask (else, torus)
+% outerRad = scalar, radius of the circle, 
+% Outputs:
+% mask = 2D image containing 1's and 0's at specified locations according to the mask
+% maskCoordinates = nx2 array containing pixel coordinates for 1's (y,x) (used in applyMask_random.m)
+
+function [mask,maskCoordinates] = makeCircularMask(data,innerRad,outerRad)
 
 [xSize,ySize,~] = size(data);
 

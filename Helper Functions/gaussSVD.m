@@ -1,13 +1,18 @@
-function [recon,dvec_inv,dvec_invf,Ainvf] = gaussSVD(A,b,sigma)
-
+% Purpose: main reconstruction algorithm.  uses truncated SVD to reconstruct spectra
+% from measurement of speckle.  but uses a gaussian filter instead of box 
+% to filter the singular values. 
 %Inputs: A - 2D SSTM, obtained from calibration
 %        b - input diffuse spectrum to be reconstructed
-%        sigma - gaussian filter kernal for thresholding
+%        sigma - gaussian filter width (affects rolloff)
 
-%Outputs: x = reconstructed input spectrum
-%       dvec_inv = inverse singular values
-%       dvec_invf = filtered inverse singular values
-%       gaussian_filter = soft threshold filter for inverse singular values
+%Outputs: 
+%       recon = reconstructed input spectrum (main output)
+%       dvec_inv = inverse singular values (for plotting purposes)
+%       dvec_invf = filtered inverse singular values (for plotting purposes)
+%       Ainvf = pseudoinverse of the SSTM (low-rank inverse using SVD)
+
+function [recon,dvec_inv,dvec_invf,Ainvf] = gaussSVD(A,b,sigma)
+
 
 % initialize size of input matrix A
     [numPixels,numWavelengths] = size(A);

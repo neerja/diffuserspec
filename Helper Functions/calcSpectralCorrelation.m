@@ -1,15 +1,23 @@
-function [spectralCorrelation] = calcSpectralCorrelation(SSTM, iminWaveShift, imaxWaveShift)   
-% This function's purpose is to calculate the spectral correlation function
+% Purpose: calculate the spectral correlation function based on equation 
+% defined in DiffuserSpec manuscript, which was originally obtained from 
+% [B. Redding, et al., Optics Express, 21, 5, 6584 (2013)] and 
+% [P.Wang, R. Menon., Optics Express, 22,12,14575 (2014) 
 % for a given spatial-spectral transfer matrix (SSTM) collected on the
 % DiffuserSpec system.
-
 % Inputs: 
-%       SSTM = 2D NxM (spatialPixels x wavelength) matrix
-%       maxWaveShift = index of number of wavelengths to evaluate. Note:
-%           this is in pixels. For example, if the SSTM is 2000x100, where
-%           100 wavelength pixels spans 25nm (1 pix. = 0.25nm), a maxWaveShift
-%           of 20 will evaluate the spectral correlation over 20 pixels
-%           which, corresponds to 20(0.25) = 5nm. 
+% SSTM = 2D NxM (spatialPixels x wavelength) matrix
+% iminWaveShift = starting index of number of wavelengths to evaluate. Note:
+%    this is in channels. For example, if the SSTM is 2000x100, where
+%    100 wavelength channels spans 25nm (1 chan = 0.25nm), a maxWaveShift
+%    of 20 will evaluate the spectral correlation over 20 channels
+%    which, corresponds to 20(0.25) = 5nm. 
+% imaxWaveShift = ending index of number of wavelengths to evaluate.
+%    Same Note as above
+% Outputs: 
+% spectralCorrelation = 2D matrix containing computed correlation values
+%    as a function of sensor pixel and wavelength shift. 
+
+function [spectralCorrelation] = calcSpectralCorrelation(SSTM, iminWaveShift, imaxWaveShift)   
 
 % truncate SSTM matrix to only include relevant wavelengths
 SSTM_trunc = SSTM(:,iminWaveShift:imaxWaveShift);

@@ -1,24 +1,26 @@
 % main.m
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  
 %
 %  Purpose: This script demonstrates basic principles presented in the
 %  diffuserspec journal article
 %
-%  Instructions: You can run this entire script or section by section. 
+%  Instructions: You can run this entire script or section by section. Make
+%  sure to set current folder to the diffuserspec/ directory. 
 %
 %  Subfunctions: All subfunctions are located in ./HelperFunctions/
 %  applyMask_random.m, calcSpectralCorrelation.m, gaussSVD.m,
 %  load_normalize_SSTM.m, makeCircularMask.m, tifRead.m
 %
 %  Data files required: All data files are located in ./Data/ 
-%
+%  Code and data can be downloaded from https://osf.io/b79an/
 %--------------------------------------------------------------------------
 %
 %  Author:          Joe Malone (joseph.d.malone@vanderbilt.edu, Neerja
 %                   Aggarwal (neerja@berkeley.edu)
-%  Organization:    Bowden Biomedical Optics Lab, Vanderbilt University
+%  Organization:    Bowden Biomedical Optics Lab (Vanderbilt University) &
+%                   Computational Imaging Lab (University of California -
+%                   Berkeley)
 %  Creation Date:   2022/20/12
 %  Last Modified:   2022/20/12
 %  Cite as:         J. Malone, N. Aggarwal, L. Waller, A. Bowden.
@@ -147,7 +149,6 @@ title('DiffuserSpec reconstruction of Inphenix SLED source')
 xlabel('Wavelength (nm)')
 ylabel('Norm. Intensity')
 
-
 %% 5. analyze the spectral correlation for this diffuser matrix
 
 % assign spectral shift variable based on calibrated wavelength values and
@@ -159,7 +160,7 @@ spectralShift = circshift(spectralShift,173);
 % shift spectral dimension so that middle wavelength is first
 SSTM_outerRad_forSC = circshift(SSTM_outerRad,172,2);
 
-% calculate spectral correlation, limited to 50 wavelength shifts
+% calculate spectral correlation, 
 spectralCorrelation_outerRad = ...
     calcSpectralCorrelation(SSTM_outerRad_forSC, 1,344);
 
