@@ -9,7 +9,7 @@
 %       recon = reconstructed input spectrum (main output)
 %       dvec_inv = inverse singular values (for plotting purposes)
 %       dvec_invf = filtered inverse singular values (for plotting purposes)
-%       gaussian_filter = filter for inverse singular values (for plotting purposes)
+%       Ainvf = pseudoinverse of the SSTM (low-rank inverse using SVD)
 
 function [recon,dvec_inv,dvec_invf,Ainvf] = gaussSVD(A,b,sigma)
 

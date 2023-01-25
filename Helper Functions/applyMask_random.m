@@ -2,12 +2,12 @@
 
 % Inputs: 
 %       SSTM = processed 3D array containing calibration matrix with axes: x,y,lambda
-%       maskCoordinates = coordinates of "on pixels" after mask is applied to SSTM.
+%       maskCoordinates = y,x coordinates of "on pixels" after mask is applied to SSTM.
 %       samplepercent = scalar between 0 and 100.
 
 % Ouputs:
 % SSTM_2D = subsampled 2D calibration matrix (pixels vs wavelength)
-% samp_ind = 2D matrix containing sampling indices. 
+% samp_ind = vector containing sampling indices into maskCoordinates
 
 function [SSTM_2D,samp_ind] = applyMask_random(SSTM,maskCoordinates,samplepercent)
 
