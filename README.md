@@ -2,6 +2,8 @@
 
 Diffuser Spectrometer Git Repo (MATLAB VERSION)
 
+Read the full paper at: https://opg.optica.org/ol/fulltext.cfm?uri=ol-48-2-323&id=524687
+
 How to install this repository:
 
 1. Clone the repo to your local computer. 
